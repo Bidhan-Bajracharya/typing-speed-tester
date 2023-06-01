@@ -1,9 +1,9 @@
 const Body = () => {
   return (
     <>
-        <section className="w-full h-screen">
+        <main className="w-full h-screen font-poppins">
             this is main body
-        </section> 
+        </main> 
     </>
   )
 }
