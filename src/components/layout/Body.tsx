@@ -28,8 +28,7 @@ const Body = () => {
         }
         return word;
       });
-      console.log(updatedWords);
-      
+
       return updatedWords;
     });
   }
@@ -41,21 +40,16 @@ const Body = () => {
       
       event.preventDefault(); // Prevents the space character from being entered in the input field
       setUserWord(target.value.trim());
-      console.log("before" + spaceCounter);
       
       // check if the entered word matched the current word
       if (userWord === words[spaceCounter].word) {
         handleWordCheck("correct");
-        console.log("right");
       } else if(userWord !== words[spaceCounter].word){
         handleWordCheck("wrong");
-        console.log("false");
       }
       
       setSpaceCounter((prevState) => prevState + 1);
       setUserWord("");
-      console.log("after" + spaceCounter);
-      
     }
   };
 
