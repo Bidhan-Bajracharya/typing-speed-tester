@@ -22,12 +22,14 @@ const Body = () => {
   // checking if user-typed word matched existing word
   const handleWordCheck = (status: string) => {
     setWords((prevWords) => {
-      const updatedWords = prevWords.map((word) => {
-        if (word.word === userWord) {
+      const updatedWords = prevWords.map((word, index) => {
+        if (index == spaceCounter) {
           return { ...word, correct: `${status}` };
         }
         return word;
       });
+      console.log(updatedWords);
+      
       return updatedWords;
     });
   }
@@ -56,9 +58,6 @@ const Body = () => {
       
     }
   };
-
-  console.log(words);
-  
 
   return (
     <>

@@ -15,16 +15,13 @@ const SentenceContainer: React.FC<ChallengeWords> = ({ words }) => {
         {words.map((word) => (
           <span
             key={word.word}
-            // className={`${
-            //   word.correct == "pending"
-            //     ? "text-white"
-            //     : word.correct == "correct"
-            //     ? "text-green-600"
-            //     : "text-red-500"
-            // }`}
-            className={`${word.correct == "pending" && "text-white"} ${
-              word.correct == "correct" && "text-green-600"
-            } ${word.correct == "wrong" && "text-red-600"}`}
+            className={`${
+              word.correct == "pending"
+                ? "text-white"
+                : word.correct == "correct"
+                ? "text-green-600"
+                : "text-red-500"
+            }`}
           >
             {word.word + " "}
           </span>
