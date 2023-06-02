@@ -1,6 +1,7 @@
 import React from "react";
 
 interface Word {
+  id: number;
   word: string;
   correct: string;
 }
@@ -14,7 +15,7 @@ const SentenceContainer: React.FC<ChallengeWords> = ({ words }) => {
       <div className="bg-sb px-9 py-6 w-full h-[77px] rounded-md overflow-clip">
         {words.map((word) => (
           <span
-            key={word.word}
+            key={word.id}
             className={`${
               word.correct == "pending"
                 ? "text-white"

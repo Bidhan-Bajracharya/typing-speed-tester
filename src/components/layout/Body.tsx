@@ -1,13 +1,30 @@
-import { useState, KeyboardEvent } from "react";
+import { useState, useEffect, KeyboardEvent } from "react";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import SentenceContainer from "../UI/SentenceContainer";
 
 const Body = () => {
   const [words, setWords] = useState([
-    { word: "apple", correct: "pending" },
-    { word: "banana", correct: "pending" },
-    { word: "orange", correct: "pending" },
+    { id: 1, word: "apple", correct: "pending" },
+    { id: 2, word: "banana", correct: "pending" },
+    { id: 3, word: "orange", correct: "pending" },
+    { id: 4, word: "apple", correct: "pending" },
   ]);
+
+  const [seconds, setSeconds] = useState<number>(60);
+  const [initialSeconds, setInitialSeconds] = useState<number>(60);
+  const [startedTyping, setStartedTyping] = useState<boolean>(false);
+
+  // counting down the timer
+  useEffect(() => {
+    // check if user started typing and if timer has run out
+    if (startedTyping && seconds > 0) {
+      const timer = setTimeout(() => {
+        setSeconds(seconds - 1);
+      }, 1000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [startedTyping, seconds]);
 
   // number of words typed by user
   const [spaceCounter, setSpaceCounter] = useState(0);
@@ -16,7 +33,17 @@ const Body = () => {
   const [userWord, setUserWord] = useState("");
 
   const handleWordSubmit = (word: string) => {
+    if (!startedTyping) {
+      setStartedTyping(true);
+    }
+
     setUserWord(word);
+  };
+
+  // reset the timer
+  const resetTimer = () => {
+    setSeconds(initialSeconds);
+    setStartedTyping(false);
   };
 
   // checking if user-typed word matched existing word
@@ -24,6 +51,7 @@ const Body = () => {
     setWords((prevWords) => {
       const updatedWords = prevWords.map((word, index) => {
         if (index == spaceCounter) {
+          // update color of the word user recently typed
           return { ...word, correct: `${status}` };
         }
         return word;
@@ -31,23 +59,23 @@ const Body = () => {
 
       return updatedWords;
     });
-  }
+  };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
     // check for spacebar
     if (event.key === " " || event.key === "Spacebar") {
       const target = event.target as HTMLTextAreaElement;
-      
+
       event.preventDefault(); // Prevents the space character from being entered in the input field
       setUserWord(target.value.trim());
-      
+
       // check if the entered word matched the current word
       if (userWord === words[spaceCounter].word) {
         handleWordCheck("correct");
-      } else if(userWord !== words[spaceCounter].word){
+      } else if (userWord !== words[spaceCounter].word) {
         handleWordCheck("wrong");
       }
-      
+
       setSpaceCounter((prevState) => prevState + 1);
       setUserWord("");
     }
@@ -86,10 +114,19 @@ const Body = () => {
             </div>
 
             <div className="bg-sb flex p-5 justify-center items-center grow rounded-md m-[0.5rem]">
-              Timer
+              {seconds === 0 ? (
+                <span>Time's up!</span>
+              ) : (
+                <span>{`${Math.floor(seconds / 60)}:${(seconds % 60)
+                  .toString()
+                  .padStart(2, "0")}`}</span>
+              )}
             </div>
 
-            <div className="bg-sb flex p-5 justify-center items-center grow rounded-md m-[0.5rem] cursor-pointer">
+            <div
+              onClick={resetTimer}
+              className="bg-sb flex p-5 justify-center items-center grow rounded-md m-[0.5rem] cursor-pointer"
+            >
               Reset
             </div>
           </div>
