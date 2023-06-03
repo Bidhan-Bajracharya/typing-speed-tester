@@ -11,17 +11,19 @@ const Body = () => {
   ];
 
   const [words, setWords] = useState(initialWordState);
-
   const [seconds, setSeconds] = useState(5);
   const [initialSeconds, setInitialSeconds] = useState(60);
   const [startedTyping, setStartedTyping] = useState(false);
   const [disableInputField, setDisableInputField] = useState(false);
+  const [incorrectWordCount, setIncorrectWordCount] = useState(0);
+  const [grossWPM, setGrossWPM] = useState(0);
+  const [rawWPM, setRawWPM] = useState(0);
 
-  // useEffect(() => {
-  //   if (seconds === 0) {
-  //     setDisableInputField(true);
-  //   }
-  // }, [seconds]);
+  // number of words typed by user
+  const [spaceCounter, setSpaceCounter] = useState(0);
+
+  // tracking the word typed by the user
+  const [userWord, setUserWord] = useState("");
 
   // counting down the timer
   useEffect(() => {
@@ -31,20 +33,18 @@ const Body = () => {
       timer = setTimeout(() => {
         setSeconds(seconds - 1);
       }, 1000);
-
+      // disable input field when timer runs out
     } else if (seconds === 0) {
       setDisableInputField(true);
+
+      const grossWPM = spaceCounter / 5 / 1;
+      setGrossWPM(grossWPM);
+
+      const rawWPM = grossWPM - incorrectWordCount / 1;
+      setRawWPM(rawWPM);
     }
     return () => clearTimeout(timer);
   }, [startedTyping, seconds]);
-
-  console.log(disableInputField);
-
-  // number of words typed by user
-  const [spaceCounter, setSpaceCounter] = useState(0);
-
-  // tracking the word typed by the user
-  const [userWord, setUserWord] = useState("");
 
   const handleWordSubmit = (word: string) => {
     if (!startedTyping) {
@@ -54,11 +54,16 @@ const Body = () => {
     setUserWord(word);
   };
 
-  // reset the timer
-  const resetTimer = () => {
+  // reset the tester
+  const resetGame = () => {
+    setIncorrectWordCount(0);
+    setRawWPM(0);
+    setGrossWPM(0);
+    setDisableInputField(false);
     setWords(initialWordState);
     setSeconds(initialSeconds);
     setStartedTyping(false);
+    setUserWord("");
   };
 
   // checking if user-typed word matched existing word
@@ -88,6 +93,7 @@ const Body = () => {
       if (userWord === words[spaceCounter].word) {
         handleWordCheck("correct");
       } else if (userWord !== words[spaceCounter].word) {
+        setIncorrectWordCount((prevState) => prevState + 1);
         handleWordCheck("wrong");
       }
 
@@ -126,6 +132,7 @@ const Body = () => {
             />
 
             <div className="bg-sb flex p-5 justify-center items-center grow rounded-md m-[0.5rem]">
+              {grossWPM}
               WPM
             </div>
 
@@ -140,7 +147,7 @@ const Body = () => {
             </div>
 
             <div
-              onClick={resetTimer}
+              onClick={resetGame}
               className="bg-sb flex p-5 justify-center items-center grow rounded-md m-[0.5rem] cursor-pointer"
             >
               Reset
