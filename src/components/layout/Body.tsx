@@ -3,28 +3,42 @@ import Select, { SelectChangeEvent } from "@mui/material/Select";
 import SentenceContainer from "../UI/SentenceContainer";
 
 const Body = () => {
-  const [words, setWords] = useState([
+  const initialWordState = [
     { id: 1, word: "apple", correct: "pending" },
     { id: 2, word: "banana", correct: "pending" },
     { id: 3, word: "orange", correct: "pending" },
     { id: 4, word: "apple", correct: "pending" },
-  ]);
+  ];
 
-  const [seconds, setSeconds] = useState<number>(60);
-  const [initialSeconds, setInitialSeconds] = useState<number>(60);
-  const [startedTyping, setStartedTyping] = useState<boolean>(false);
+  const [words, setWords] = useState(initialWordState);
+
+  const [seconds, setSeconds] = useState(5);
+  const [initialSeconds, setInitialSeconds] = useState(60);
+  const [startedTyping, setStartedTyping] = useState(false);
+  const [disableInputField, setDisableInputField] = useState(false);
+
+  // useEffect(() => {
+  //   if (seconds === 0) {
+  //     setDisableInputField(true);
+  //   }
+  // }, [seconds]);
 
   // counting down the timer
   useEffect(() => {
+    let timer: any;
     // check if user started typing and if timer has run out
     if (startedTyping && seconds > 0) {
-      const timer = setTimeout(() => {
+      timer = setTimeout(() => {
         setSeconds(seconds - 1);
       }, 1000);
 
-      return () => clearTimeout(timer);
+    } else if (seconds === 0) {
+      setDisableInputField(true);
     }
+    return () => clearTimeout(timer);
   }, [startedTyping, seconds]);
+
+  console.log(disableInputField);
 
   // number of words typed by user
   const [spaceCounter, setSpaceCounter] = useState(0);
@@ -42,6 +56,7 @@ const Body = () => {
 
   // reset the timer
   const resetTimer = () => {
+    setWords(initialWordState);
     setSeconds(initialSeconds);
     setStartedTyping(false);
   };
@@ -107,6 +122,7 @@ const Body = () => {
               value={userWord}
               onKeyDown={handleKeyDown}
               onChange={(e) => handleWordSubmit(e.target.value)}
+              disabled={disableInputField}
             />
 
             <div className="bg-sb flex p-5 justify-center items-center grow rounded-md m-[0.5rem]">
