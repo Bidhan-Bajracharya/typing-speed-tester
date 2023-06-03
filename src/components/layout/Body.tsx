@@ -18,6 +18,7 @@ const Body = () => {
   const [incorrectWordCount, setIncorrectWordCount] = useState(0);
   const [grossWPM, setGrossWPM] = useState(0);
   const [rawWPM, setRawWPM] = useState(0);
+  const [accuracy, setAccuracy] = useState(0);
 
   // number of words typed by user
   const [spaceCounter, setSpaceCounter] = useState(0);
@@ -37,11 +38,17 @@ const Body = () => {
     } else if (seconds === 0) {
       setDisableInputField(true);
 
+      // net/gross wpm
       const grossWPM = spaceCounter / 5 / 1;
       setGrossWPM(grossWPM);
 
+      // raw wpm
       const rawWPM = grossWPM - incorrectWordCount / 1;
       setRawWPM(rawWPM);
+
+      // accuracy percentage
+      const accuracyPct = (grossWPM/rawWPM) * 100
+      setAccuracy(accuracyPct);
     }
     return () => clearTimeout(timer);
   }, [startedTyping, seconds]);
@@ -56,6 +63,7 @@ const Body = () => {
 
   // reset the tester
   const resetGame = () => {
+    setAccuracy(0);
     setIncorrectWordCount(0);
     setRawWPM(0);
     setGrossWPM(0);
