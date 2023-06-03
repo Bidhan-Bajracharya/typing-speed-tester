@@ -3,16 +3,15 @@ import Select, { SelectChangeEvent } from "@mui/material/Select";
 import SentenceContainer from "../UI/SentenceContainer";
 import ResultContainer from "../UI/ResultContainer";
 
-const Body = () => {
-  const initialWordState = [
-    { id: 1, word: "apple", correct: "pending" },
-    { id: 2, word: "banana", correct: "pending" },
-    { id: 3, word: "orange", correct: "pending" },
-    { id: 4, word: "apple", correct: "pending" },
-  ];
+export interface Word {
+  id: number;
+  word: string;
+  correct: string;
+}
 
-  const [words, setWords] = useState(initialWordState);
-  const [seconds, setSeconds] = useState(5);
+const Body = () => {
+  const [words, setWords] = useState<Word[]>([]);
+  const [seconds, setSeconds] = useState(60);
   const [initialSeconds, setInitialSeconds] = useState(60);
   const [startedTyping, setStartedTyping] = useState(false);
   const [disableInputField, setDisableInputField] = useState(false);
@@ -20,12 +19,33 @@ const Body = () => {
   const [grossWPM, setGrossWPM] = useState(0);
   const [rawWPM, setRawWPM] = useState(0);
   const [accuracy, setAccuracy] = useState(0);
+  const [spaceCounter, setSpaceCounter] = useState(0); // number of words typed by user
+  const [userWord, setUserWord] = useState(""); // tracking the word typed by the user
 
-  // number of words typed by user
-  const [spaceCounter, setSpaceCounter] = useState(0);
+  const fetchWords = async () => {
+    try {
+      const response = await fetch(
+        "https://random-word-api.herokuapp.com/word?number=90&length=5"
+      );
+      if (!response.ok) {
+        throw new Error("Request failed.");
+      }
+      const responseData = await response.json();
 
-  // tracking the word typed by the user
-  const [userWord, setUserWord] = useState("");
+      const wordsLists = responseData.map((word: string, index: number) => {
+        return { id: index + 1, word: word, correct: "pending" };
+      });
+
+      setWords(wordsLists);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // fetching random words
+  useEffect(() => {
+    fetchWords();
+  }, []);
 
   // counting down the timer
   useEffect(() => {
@@ -33,7 +53,7 @@ const Body = () => {
     // check if user started typing and if timer has run out
     if (startedTyping && seconds > 0) {
       timer = setTimeout(() => {
-        setSeconds(seconds - 1);
+        setSeconds((prevSec) => prevSec - 1);
       }, 1000);
       // disable input field when timer runs out
     } else if (seconds === 0) {
@@ -69,10 +89,10 @@ const Body = () => {
     setRawWPM(0);
     setGrossWPM(0);
     setDisableInputField(false);
-    setWords(initialWordState);
     setSeconds(initialSeconds);
     setStartedTyping(false);
     setUserWord("");
+    fetchWords();
   };
 
   // checking if user-typed word matched existing word
@@ -128,10 +148,10 @@ const Body = () => {
         </section>
 
         {/* typing section */}
-        <section className="border-green-500 border-2 mt-12 w-[815px] h-[214px]">
+        <section className="mt-12 w-[815px] h-[214px]">
           <SentenceContainer words={words} />
 
-          <div className="flex flex-row">
+          <div className="flex flex-row mt-[10px]">
             <input
               className="w-[50%] text-black m-[0.5rem] rounded-sm p-3"
               value={userWord}
