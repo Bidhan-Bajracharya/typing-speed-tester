@@ -48,7 +48,7 @@ const Body = () => {
       setRawWPM(rawWPM);
 
       // accuracy percentage
-      const accuracyPct = (grossWPM/rawWPM) * 100
+      const accuracyPct = (grossWPM / rawWPM) * 100;
       setAccuracy(accuracyPct);
     }
     return () => clearTimeout(timer);
@@ -165,8 +165,13 @@ const Body = () => {
         </section>
 
         {/* result section */}
-        <section className="border-purple-500 border-2 mt-[48px]">
-          <ResultContainer />
+        <section className="mt-[48px] w-72">
+          <ResultContainer
+            rawWPM={rawWPM}
+            accuracy={accuracy}
+            correctCharacters={spaceCounter - incorrectWordCount}
+            incorrectCharacters={incorrectWordCount}
+          />
         </section>
       </main>
     </>
