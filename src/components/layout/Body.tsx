@@ -1,6 +1,7 @@
 import { useState, useEffect, KeyboardEvent } from "react";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import SentenceContainer from "../UI/SentenceContainer";
+import ResultContainer from "../UI/ResultContainer";
 
 const Body = () => {
   const initialWordState = [
@@ -164,7 +165,9 @@ const Body = () => {
         </section>
 
         {/* result section */}
-        <section className="border-purple-500 border-2">Results</section>
+        <section className="border-purple-500 border-2 mt-[48px]">
+          <ResultContainer />
+        </section>
       </main>
     </>
   );
