@@ -1,5 +1,4 @@
 import { useState, useEffect, KeyboardEvent, useRef } from "react";
-import Select, { SelectChangeEvent } from "@mui/material/Select";
 import SentenceContainer from "../UI/SentenceContainer";
 import ResultContainer from "../UI/ResultContainer";
 
@@ -27,6 +26,7 @@ const Body = () => {
 
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // focus on input field on page render
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.focus();
@@ -84,11 +84,12 @@ const Body = () => {
       setGrossWPM(grossWPM);
 
       // raw wpm
-      const rawWPM = grossWPM - incorrectWordCount / 1;
+      const rawWPM = currentWordIndex - incorrectWordCount / 1;
       setRawWPM(rawWPM);
 
       // accuracy percentage
-      const accuracyPct = (grossWPM / rawWPM) * 100;
+      const correctWords = currentWordIndex - incorrectWordCount;
+      const accuracyPct = (correctWords / currentWordIndex) * 100;
       setAccuracy(accuracyPct);
     }
     return () => clearTimeout(timer);
