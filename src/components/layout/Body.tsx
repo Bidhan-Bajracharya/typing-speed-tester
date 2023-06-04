@@ -96,10 +96,10 @@ const Body = () => {
   useEffect(() => {
     if (spaceCounter == 20) {
       console.log("reset space counter");
-      
+
       setSpaceCounter(0);
     }
-  }, [currentWordIndex])
+  }, [currentWordIndex]);
 
   const handleWordSubmit = (word: string) => {
     if (!startedTyping) {
@@ -151,7 +151,7 @@ const Body = () => {
       // check if the entered word matched the current word
       if (userWord === words[currentWordIndex].word) {
         console.log("correct executed");
-        
+
         handleWordCheck("correct");
       } else if (userWord !== words[currentWordIndex].word) {
         console.log("wrong executed");
@@ -167,18 +167,10 @@ const Body = () => {
 
   return (
     <>
-      <main className="w-full h-screen font-poppins flex flex-col items-center bg-tb text-white">
+      <main className="w-full min-h-screen font-poppins flex flex-col items-center bg-tb text-white">
         {/* choices section*/}
-        <section className="border-yellow-500 border-2 mt-16">
-          <h1 className="text-3xl">Test Your Limit</h1>
-
-          <div className="flex flex-row mt-[20px]">
-            {/* <Select className="bg-sb border-red-400" label="Duration">
-              <MenuItem value={1}>Ten</MenuItem>
-              <MenuItem value={2}>Twenty</MenuItem>
-              <MenuItem value={3}>Thirty</MenuItem>
-            </Select> */}
-          </div>
+        <section className="mt-16">
+          <h1 className="text-3xl">Test Your Typing Limit</h1>
         </section>
 
         {/* typing section */}
@@ -187,7 +179,7 @@ const Body = () => {
 
           <div className="flex flex-row mt-[10px]">
             <input
-              className="w-[50%] text-black m-[0.5rem] rounded-sm p-3"
+              className="w-[50%] text-white bg-sb m-[0.5rem] rounded-md p-3 outline-none focus:border-blue-400 focus:border-2"
               value={userWord}
               onKeyDown={handleKeyDown}
               onChange={(e) => handleWordSubmit(e.target.value)}
@@ -195,8 +187,7 @@ const Body = () => {
             />
 
             <div className="bg-sb flex p-5 justify-center items-center grow rounded-md m-[0.5rem]">
-              {grossWPM}
-              WPM
+              {grossWPM} WPM
             </div>
 
             <div className="bg-sb flex p-5 justify-center items-center grow rounded-md m-[0.5rem]">
@@ -219,14 +210,16 @@ const Body = () => {
         </section>
 
         {/* result section */}
-        <section className="mt-[48px] w-72">
-          <ResultContainer
-            rawWPM={rawWPM}
-            accuracy={accuracy}
-            correctCharacters={spaceCounter - incorrectWordCount}
-            incorrectCharacters={incorrectWordCount}
-          />
-        </section>
+        {disableInputField && (
+          <section className="mt-[48px] w-72 mb-5">
+            <ResultContainer
+              rawWPM={rawWPM}
+              accuracy={accuracy}
+              correctCharacters={spaceCounter - incorrectWordCount}
+              incorrectCharacters={incorrectWordCount}
+            />
+          </section>
+        )}
       </main>
     </>
   );
