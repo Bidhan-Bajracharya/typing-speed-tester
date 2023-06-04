@@ -11,6 +11,7 @@ export interface Word {
 
 const Body = () => {
   const [words, setWords] = useState<Word[]>([]);
+  const [displayWords, setDisplayWords] = useState<Word[]>([]);
   const [seconds, setSeconds] = useState(60);
   const [initialSeconds, setInitialSeconds] = useState(60);
   const [startedTyping, setStartedTyping] = useState(false);
@@ -19,6 +20,7 @@ const Body = () => {
   const [grossWPM, setGrossWPM] = useState(0);
   const [rawWPM, setRawWPM] = useState(0);
   const [accuracy, setAccuracy] = useState(0);
+  const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [spaceCounter, setSpaceCounter] = useState(0); // number of words typed by user
   const [userWord, setUserWord] = useState(""); // tracking the word typed by the user
 
@@ -36,11 +38,18 @@ const Body = () => {
         return { id: index + 1, word: word, correct: "pending" };
       });
 
-      setWords(wordsLists);
+      setWords(wordsLists); // fetched words
     } catch (error) {
       console.log(error);
     }
   };
+
+  useEffect(() => {
+    if (displayWords.length == 0) {
+      const slicedWords = words.slice(0, 20);
+      setDisplayWords(slicedWords); // displaying 20 words initially
+    }
+  }, [words]);
 
   // fetching random words
   useEffect(() => {
@@ -74,6 +83,24 @@ const Body = () => {
     return () => clearTimeout(timer);
   }, [startedTyping, seconds]);
 
+  // updating lines when user reaches the last word in the line
+  useEffect(() => {
+    if (spaceCounter == 20) {
+      console.log("new line rendered in the value", spaceCounter);
+
+      setDisplayWords(words.slice(currentWordIndex, currentWordIndex + 20));
+    }
+  }, [spaceCounter]);
+
+  // reset the counter for new lines of words
+  useEffect(() => {
+    if (spaceCounter == 20) {
+      console.log("reset space counter");
+      
+      setSpaceCounter(0);
+    }
+  }, [currentWordIndex])
+
   const handleWordSubmit = (word: string) => {
     if (!startedTyping) {
       setStartedTyping(true);
@@ -84,6 +111,8 @@ const Body = () => {
 
   // reset the tester
   const resetGame = () => {
+    setCurrentWordIndex(0);
+    setSpaceCounter(0);
     setAccuracy(0);
     setIncorrectWordCount(0);
     setRawWPM(0);
@@ -97,10 +126,11 @@ const Body = () => {
 
   // checking if user-typed word matched existing word
   const handleWordCheck = (status: string) => {
-    setWords((prevWords) => {
+    setDisplayWords((prevWords) => {
       const updatedWords = prevWords.map((word, index) => {
+        // getting the word that the user is currently in
         if (index == spaceCounter) {
-          // update color of the word user recently typed
+          // update status of the word user recently typed
           return { ...word, correct: `${status}` };
         }
         return word;
@@ -119,13 +149,17 @@ const Body = () => {
       setUserWord(target.value.trim());
 
       // check if the entered word matched the current word
-      if (userWord === words[spaceCounter].word) {
+      if (userWord === words[currentWordIndex].word) {
+        console.log("correct executed");
+        
         handleWordCheck("correct");
-      } else if (userWord !== words[spaceCounter].word) {
+      } else if (userWord !== words[currentWordIndex].word) {
+        console.log("wrong executed");
         setIncorrectWordCount((prevState) => prevState + 1);
         handleWordCheck("wrong");
       }
 
+      setCurrentWordIndex((prevState) => prevState + 1);
       setSpaceCounter((prevState) => prevState + 1);
       setUserWord("");
     }
@@ -149,7 +183,7 @@ const Body = () => {
 
         {/* typing section */}
         <section className="mt-12 w-[815px] h-[214px]">
-          <SentenceContainer words={words} />
+          <SentenceContainer words={displayWords} />
 
           <div className="flex flex-row mt-[10px]">
             <input
