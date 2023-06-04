@@ -1,4 +1,4 @@
-import { useState, useEffect, KeyboardEvent } from "react";
+import { useState, useEffect, KeyboardEvent, useRef } from "react";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import SentenceContainer from "../UI/SentenceContainer";
 import ResultContainer from "../UI/ResultContainer";
@@ -25,6 +25,14 @@ const Body = () => {
   const [userWord, setUserWord] = useState(""); // tracking the word typed by the user
   const [isLoading, setIsLoading] = useState(true);
 
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
+
   const fetchWords = async () => {
     try {
       const response = await fetch(
@@ -41,7 +49,7 @@ const Body = () => {
 
       setWords(wordsLists); // fetched words
 
-      setTimeout(() => setIsLoading(false), 2000);
+      setTimeout(() => setIsLoading(false), 1000);
     } catch (error) {
       console.log(error);
     }
@@ -128,6 +136,9 @@ const Body = () => {
     setIsLoading(true);
     fetchWords();
     setTimeout(() => setIsLoading(false), 1000);
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
   };
 
   // checking if user-typed word matched existing word
@@ -185,6 +196,7 @@ const Body = () => {
 
           <div className="flex flex-row mt-[10px]">
             <input
+              ref={inputRef}
               className="w-[50%] text-white bg-sb m-[0.5rem] rounded-md p-3 outline-none focus:border-blue-400 focus:border-2"
               value={userWord}
               onKeyDown={handleKeyDown}
