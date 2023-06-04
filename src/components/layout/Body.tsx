@@ -193,7 +193,7 @@ const Body = () => {
 
         {/* typing section */}
         <section className="mt-12 w-[815px] h-[214px]">
-          <SentenceContainer words={displayWords} status={isLoading} />
+          <SentenceContainer words={displayWords} status={isLoading} currentWordIndex={spaceCounter}/>
 
           <div className="flex flex-row mt-[10px]">
             <input
