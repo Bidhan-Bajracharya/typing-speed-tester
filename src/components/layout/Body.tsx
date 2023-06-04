@@ -23,6 +23,7 @@ const Body = () => {
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [spaceCounter, setSpaceCounter] = useState(0); // number of words typed by user
   const [userWord, setUserWord] = useState(""); // tracking the word typed by the user
+  const [isLoading, setIsLoading] = useState(true);
 
   const fetchWords = async () => {
     try {
@@ -39,6 +40,8 @@ const Body = () => {
       });
 
       setWords(wordsLists); // fetched words
+
+      setTimeout(() => setIsLoading(false), 2000);
     } catch (error) {
       console.log(error);
     }
@@ -69,7 +72,7 @@ const Body = () => {
       setDisableInputField(true);
 
       // net/gross wpm
-      const grossWPM = spaceCounter / 5 / 1;
+      const grossWPM = currentWordIndex / 5 / 1;
       setGrossWPM(grossWPM);
 
       // raw wpm
@@ -122,7 +125,9 @@ const Body = () => {
     setStartedTyping(false);
     setUserWord("");
     setDisplayWords([]);
+    setIsLoading(true);
     fetchWords();
+    setTimeout(() => setIsLoading(false), 1000);
   };
 
   // checking if user-typed word matched existing word
@@ -176,7 +181,7 @@ const Body = () => {
 
         {/* typing section */}
         <section className="mt-12 w-[815px] h-[214px]">
-          <SentenceContainer words={displayWords} />
+          <SentenceContainer words={displayWords} status={isLoading} />
 
           <div className="flex flex-row mt-[10px]">
             <input
@@ -216,7 +221,7 @@ const Body = () => {
             <ResultContainer
               rawWPM={rawWPM}
               accuracy={accuracy}
-              correctCharacters={spaceCounter - incorrectWordCount}
+              correctCharacters={currentWordIndex - incorrectWordCount}
               incorrectCharacters={incorrectWordCount}
             />
           </section>
