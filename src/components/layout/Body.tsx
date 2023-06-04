@@ -121,6 +121,7 @@ const Body = () => {
     setSeconds(initialSeconds);
     setStartedTyping(false);
     setUserWord("");
+    setDisplayWords([]);
     fetchWords();
   };
 
