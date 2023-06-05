@@ -57,8 +57,8 @@ const Body = () => {
 
   useEffect(() => {
     if (displayWords.length == 0) {
-      const slicedWords = words.slice(0, 20);
-      setDisplayWords(slicedWords); // displaying 20 words initially
+      const slicedWords = words.slice(0, 22);
+      setDisplayWords(slicedWords); // displaying 22 words initially
     }
   }, [words]);
 
@@ -97,16 +97,16 @@ const Body = () => {
 
   // updating lines when user reaches the last word in the line
   useEffect(() => {
-    if (spaceCounter == 20) {
+    if (spaceCounter == 22) {
       console.log("new line rendered in the value", spaceCounter);
 
-      setDisplayWords(words.slice(currentWordIndex, currentWordIndex + 20));
+      setDisplayWords(words.slice(currentWordIndex, currentWordIndex + 22));
     }
   }, [spaceCounter]);
 
   // reset the counter for new lines of words
   useEffect(() => {
-    if (spaceCounter == 20) {
+    if (spaceCounter == 22) {
       console.log("reset space counter");
 
       setSpaceCounter(0);
