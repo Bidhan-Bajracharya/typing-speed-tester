@@ -36,7 +36,7 @@ const Body = () => {
   const fetchWords = async () => {
     try {
       const response = await fetch(
-        "https://random-word-api.herokuapp.com/word?number=90&length=5"
+        "https://random-word-api.herokuapp.com/word?number=200&length=5"
       );
       if (!response.ok) {
         throw new Error("Request failed.");
@@ -206,7 +206,7 @@ const Body = () => {
             />
 
             <div className="bg-sb flex p-5 justify-center items-center grow rounded-md m-[0.5rem]">
-              {grossWPM} WPM
+              {disableInputField && grossWPM} WPM
             </div>
 
             <div className="bg-sb flex p-5 justify-center items-center grow rounded-md m-[0.5rem]">
