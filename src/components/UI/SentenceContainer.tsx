@@ -5,11 +5,13 @@ import Skeleton from "@mui/material/Skeleton";
 interface ChallengeWords {
   words: Word[];
   status: boolean;
+  currentWordIndex: number;
 }
 
 const SentenceContainer: React.FC<ChallengeWords> = ({
   words,
   status: isLoading,
+  currentWordIndex
 }) => {
   return (
     <>
@@ -20,10 +22,10 @@ const SentenceContainer: React.FC<ChallengeWords> = ({
             <Skeleton animation="wave" sx={{ bgcolor: "grey.900" }} />
           </>
         ) : (
-          words.map((word) => (
+          words.map((word, index) => (
             <span
               key={word.id}
-              className={`text-xl ${
+              className={`w-fit text-xl ${
                 word.correct == "pending"
                   ? "text-white"
                   : word.correct == "correct"
@@ -31,7 +33,8 @@ const SentenceContainer: React.FC<ChallengeWords> = ({
                   : "text-red-500"
               }`}
             >
-              {word.word + " "}
+              <span className={`${index == currentWordIndex && 'bg-gray-700'}`}>{word.word}</span>
+              <span> </span>
             </span>
           ))
         )}

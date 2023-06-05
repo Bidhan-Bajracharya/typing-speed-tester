@@ -1,6 +1,8 @@
-import { useState, useEffect, KeyboardEvent, useRef } from "react";
+import React, { useState, useEffect, KeyboardEvent, useRef } from "react";
 import SentenceContainer from "../UI/SentenceContainer";
 import ResultContainer from "../UI/ResultContainer";
+import Snackbar from "@mui/material/Snackbar";
+import MuiAlert, { AlertProps } from "@mui/material/Alert";
 
 export interface Word {
   id: number;
@@ -8,11 +10,18 @@ export interface Word {
   correct: string;
 }
 
+const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
+  props,
+  ref
+) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
+
 const Body = () => {
   const [words, setWords] = useState<Word[]>([]);
   const [displayWords, setDisplayWords] = useState<Word[]>([]);
   const [seconds, setSeconds] = useState(60);
-  const [initialSeconds, setInitialSeconds] = useState(60);
+  const [initialSeconds] = useState(60);
   const [startedTyping, setStartedTyping] = useState(false);
   const [disableInputField, setDisableInputField] = useState(false);
   const [incorrectWordCount, setIncorrectWordCount] = useState(0);
@@ -23,7 +32,7 @@ const Body = () => {
   const [spaceCounter, setSpaceCounter] = useState(0); // number of words typed by user
   const [userWord, setUserWord] = useState(""); // tracking the word typed by the user
   const [isLoading, setIsLoading] = useState(true);
-
+  const [open, setOpen] = React.useState(false); // snackbar open/close state
   const inputRef = useRef<HTMLInputElement>(null);
 
   // focus on input field on page render
@@ -36,7 +45,7 @@ const Body = () => {
   const fetchWords = async () => {
     try {
       const response = await fetch(
-        "https://random-word-api.herokuapp.com/word?number=90&length=5"
+        "https://random-word-api.herokuapp.com/word?number=200&length=5"
       );
       if (!response.ok) {
         throw new Error("Request failed.");
@@ -51,14 +60,14 @@ const Body = () => {
 
       setTimeout(() => setIsLoading(false), 1000);
     } catch (error) {
-      console.log(error);
+      setOpen(true); // displaying error message
     }
   };
 
   useEffect(() => {
     if (displayWords.length == 0) {
-      const slicedWords = words.slice(0, 20);
-      setDisplayWords(slicedWords); // displaying 20 words initially
+      const slicedWords = words.slice(0, 22);
+      setDisplayWords(slicedWords); // displaying 22 words initially
     }
   }, [words]);
 
@@ -97,18 +106,14 @@ const Body = () => {
 
   // updating lines when user reaches the last word in the line
   useEffect(() => {
-    if (spaceCounter == 20) {
-      console.log("new line rendered in the value", spaceCounter);
-
-      setDisplayWords(words.slice(currentWordIndex, currentWordIndex + 20));
+    if (spaceCounter == 22) {
+      setDisplayWords(words.slice(currentWordIndex, currentWordIndex + 22));
     }
   }, [spaceCounter]);
 
   // reset the counter for new lines of words
   useEffect(() => {
-    if (spaceCounter == 20) {
-      console.log("reset space counter");
-
+    if (spaceCounter == 22) {
       setSpaceCounter(0);
     }
   }, [currentWordIndex]);
@@ -168,11 +173,8 @@ const Body = () => {
 
       // check if the entered word matched the current word
       if (userWord === words[currentWordIndex].word) {
-        console.log("correct executed");
-
         handleWordCheck("correct");
       } else if (userWord !== words[currentWordIndex].word) {
-        console.log("wrong executed");
         setIncorrectWordCount((prevState) => prevState + 1);
         handleWordCheck("wrong");
       }
@@ -183,8 +185,25 @@ const Body = () => {
     }
   };
 
+  const handleClose = (
+    event?: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpen(false);
+  };
+
   return (
     <>
+      <Snackbar open={open} autoHideDuration={3000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity="error" sx={{ width: "100%" }}>
+          Something went wrong, try again later
+        </Alert>
+      </Snackbar>
+
       <main className="w-full min-h-screen font-poppins flex flex-col items-center bg-tb text-white">
         {/* choices section*/}
         <section className="mt-16">
@@ -193,7 +212,11 @@ const Body = () => {
 
         {/* typing section */}
         <section className="mt-12 w-[815px] h-[214px]">
-          <SentenceContainer words={displayWords} status={isLoading} />
+          <SentenceContainer
+            words={displayWords}
+            status={isLoading}
+            currentWordIndex={spaceCounter}
+          />
 
           <div className="flex flex-row mt-[10px]">
             <input
@@ -206,7 +229,7 @@ const Body = () => {
             />
 
             <div className="bg-sb flex p-5 justify-center items-center grow rounded-md m-[0.5rem]">
-              {grossWPM} WPM
+              {disableInputField && grossWPM} WPM
             </div>
 
             <div className="bg-sb flex p-5 justify-center items-center grow rounded-md m-[0.5rem]">
