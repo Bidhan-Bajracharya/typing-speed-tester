@@ -99,7 +99,7 @@ const Body = () => {
       // accuracy percentage
       const correctWords = currentWordIndex - incorrectWordCount;
       const accuracyPct = (correctWords / currentWordIndex) * 100;
-      setAccuracy(accuracyPct);
+      setAccuracy(Math.round(accuracyPct));
     }
     return () => clearTimeout(timer);
   }, [startedTyping, seconds]);
